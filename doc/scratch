@@ -1,0 +1,20 @@
+Herbie::Herbie.new.loop
+
+__END__
+
+player = Herbie::Player.new
+
+files = Dir['*.{mp3,m4a}'].sort
+
+path = File.expand_path(files.shift)
+puts "Playing #{path}"
+player.playfile(path)
+player.play
+player.on_eos do
+  path = File.expand_path(files.shift)
+  puts "Playing #{path}"
+  player.playfile(path)
+  player.play
+end
+
+player.loop
