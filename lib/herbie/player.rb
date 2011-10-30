@@ -11,14 +11,15 @@ module Herbie
     def initialize
       Gst.init
       @playbin = Gst::ElementFactory.make('playbin2')
+      @playbin.bus.add_watch do |bus, message|
+        notify_watchers :end_of_stream, message if message.type == Gst::Message::Type::EOS
+        true
+      end
     end
 
     def playfile(file)
       @playbin.stop
       @playbin.uri = "file://#{file}"
-      @playbin.bus.add_watch do |bus, message|
-        notify_watchers :end_of_stream, message if message.type == Gst::Message::Type::EOS
-      end
     end
 
     def play

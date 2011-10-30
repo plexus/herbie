@@ -158,7 +158,8 @@ module Herbie
     end
     
     def set_status(pos, msg)
-      @windows["#{pos}_bar".to_sym].addstr(msg)
+      @windows["#{pos}_bar".to_sym].wclear
+      @windows["#{pos}_bar".to_sym].addstr(msg.to_s)
     end
   end
 end

@@ -24,7 +24,7 @@ module Herbie
       @ui.watch.keypress do |key|
         case key
         when ?q, ?Q
-          Thread.new{ @player.quit }
+          @player.quit
           false
         when ?n, ?N
           play_next_song
@@ -41,8 +41,8 @@ module Herbie
     
     def play_next_song
       unless @playlist.empty?
-        file = @playlist.shift.filename
-        @player.playfile(file)
+        file = @playlist.shift
+        @player.playfile(file.filename)
         @player.play
         @ui.set_status :top, file
         update_ui_playlist

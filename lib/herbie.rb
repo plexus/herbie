@@ -4,6 +4,9 @@ require 'herbie/ui'
 require 'herbie/model/playlist'
 require 'herbie/controller/playlist_controller'
 
+LOG = File.open('/tmp/herbie.log','a')
+
+def log(msg); LOG << "[%s] %s\n" % [Time.now.strftime("%Y-%m-%d %H:%M:%S"), msg] ; LOG.flush end
 
 module Herbie
   class Herbie
@@ -18,12 +21,13 @@ module Herbie
       @playlist_controller = PlaylistController.new(@ui, @playlist, @player)
       
       @playlist_controller.update_ui_playlist
-      @playlist_controller.play_next_song
+      # @playlist_controller.play_next_song
     end
 
     def loop
-      [Thread.new {@ui.loop},
-       Thread.new {@player.loop}].each {|t| t.join}
+      t = Thread.new {@ui.loop},
+      @player.loop
+      t.join
     end
   end
 end
