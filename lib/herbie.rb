@@ -2,7 +2,9 @@
 require 'herbie/player'
 require 'herbie/ui'
 require 'herbie/model/playlist'
+require 'herbie/model/browser'
 require 'herbie/controller/playlist_controller'
+require 'herbie/controller/browser_controller'
 
 LOG = File.open('/tmp/herbie.log','a')
 
@@ -17,11 +19,20 @@ module Herbie
       
       @playlist = Playlist.new
       @playlist.append_files Dir[File.join(@pwd, '*.{mp3,m4a}').gsub('[','\[').gsub(']','\]')].sort
-      
+
+      @browser = Browser.new
+
       @playlist_controller = PlaylistController.new(@ui, @playlist, @player)
+      @browser_controller = BrowserController.new(@ui, @playlist, @browser)
       
+      @ui.watch.keypress do |pos, key|
+        if key == ?q || key == ?Q
+          @player.quit
+          false
+        end
+        true
+      end
       @playlist_controller.update_ui_playlist
-      # @playlist_controller.play_next_song
     end
 
     def loop

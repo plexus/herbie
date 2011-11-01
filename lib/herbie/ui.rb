@@ -7,7 +7,8 @@ module Herbie
   #
   class UI
     include Watchable
-    
+    attr_accessor :focus_menu
+
     def initialize
       @nc = Ncurses
       @top_window_percent = 0.4
@@ -20,6 +21,9 @@ module Herbie
       @colors = init_colors
       @windows = init_windows
       @menus = {}
+      create_menu :top
+      create_menu :bottom
+
       @focus_menu = :top
       
       resize_windows
@@ -43,7 +47,11 @@ module Herbie
           when @nc::KEY_RESIZE
             resize_windows
           else
-            break unless notify_watchers :keypress, char
+            begin
+              break unless notify_watchers :keypress, @focus_menu, char
+            rescue Object => e
+              set_status :bottom, e
+            end
           end
           menu = @menus[@focus_menu]
           menu_win = menu.win
@@ -90,8 +98,10 @@ module Herbie
     def resize_windows
       maxx, maxy = *screen_size
 
-      height1 = (maxy - 3) * @top_window_percent
+      height1 = Integer((maxy - 3) * @top_window_percent)
       height2 = maxy - 3 - height1
+
+      raise "#{maxy} != #{height1} + #{height2}" unless maxy == (height1 + height2 + 3)
       {
         #:stdscr => [[0, 0], [0,0]],
         :top_bar    => [[1, maxx],       [0, 0]],
@@ -104,6 +114,7 @@ module Herbie
         win = @windows[name]
         win.mvwin(*pos)
         win.wresize(*dim)
+        win.wrefresh
       end
       
       @windows.each do |k,w|
@@ -120,6 +131,10 @@ module Herbie
       
       @nc.refresh
     end
+
+    def current_item(menu = @focus_menu)
+      @menus[menu].current_item.user_object
+    end
     
     def create_menu(pos)
       win = @windows[pos]
@@ -135,9 +150,10 @@ module Herbie
       @menus[pos] = create_menu(pos)
       items = items.map do |itemdata|
         item = @nc::Menu.new_item(itemdata.to_s, '')
+        next unless item
         item.user_object = itemdata
         item
-      end
+      end.compact
       menu = @menus[pos]
       menu.items = items
       win = @windows[pos]

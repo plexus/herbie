@@ -20,18 +20,16 @@ module Herbie
           update_ui_playlist
         end
       end
-      
-      @ui.watch.keypress do |key|
+
+      @ui.watch.keypress do |pos, key|
+        next true unless pos == :top
         case key
-        when ?q, ?Q
-          @player.quit
-          false
         when ?n, ?N
           play_next_song
-          true
-        else
-          true
+        when ?\t
+          @ui.focus_menu = :bottom
         end
+        true
       end
     end
     
