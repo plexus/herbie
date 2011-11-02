@@ -24,7 +24,7 @@ module Herbie
           if File.file? file
             @playlist.append_file(file)
           elsif File.directory? file
-            @playlist.append_files(Dir[File.join(file, '**')])
+            @playlist.append_files(Dir[File.join(file, '**')].sort)
           end
         end
         true

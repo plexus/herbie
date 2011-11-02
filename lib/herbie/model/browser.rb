@@ -18,7 +18,7 @@ module Herbie
     end
 
     def ls
-      Dir[@current_dir + '/*'].map{|s| s.extend(Filename)}
+      Dir[@current_dir + '/*'].map{|s| s.extend(Filename)}.sort
     end
 
     def cd_into(dir)
