@@ -12,15 +12,15 @@ module Herbie
 
         @lastfm = Lastfm.new(config['api_key'], config['api_secret'])
         
-        unless config['token']
+        unless config['session']
           token = lastfm.auth.get_token
-          puts "Please visit http://www.last.fm/api/auth/?api_key=%s&token=%s and configure\n  token: %s\nin ~/.herbie" % [config['api_key'], token, token]
-          exit
+          puts "Please visit http://www.last.fm/api/auth/?api_key=%s&token=%s and approve Herbie, then press any key to continue." % [config['api_key'], token]
+          STDIN.getc
+          lastfm.session = config['session'] = lastfm.auth.get_session(token)
+          Herbie.save_config
+        else
+          lastfm.session = config['session']
         end
-        
-        token = config['token']
-
-        lastfm.session = lastfm.auth.get_session(token)
 
         @file = nil
 

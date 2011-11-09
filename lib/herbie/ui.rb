@@ -9,7 +9,7 @@ module Herbie
     include Watchable
     attr_accessor :focus_menu
 
-    def initialize
+    def init_ui
       @nc = Ncurses
       @top_window_percent = 0.4
       %w(initscr start_color cbreak noecho nonl).each {|s| @nc.send s}

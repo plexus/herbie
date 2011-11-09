@@ -19,10 +19,12 @@ module Herbie
 
     def initialize
       @player = Player.new
-      @ui = UI.new
       @browser = Browser.new
       @playlist = Playlist.new
+      @ui = UI.new
       @lastfm = Scrobbler.new(@player, @ui)
+
+      @ui.init_ui
 
       @playlist_controller = PlaylistController.new(@ui, @playlist, @player)
       @browser_controller = BrowserController.new(@ui, @playlist, @browser)
@@ -34,6 +36,7 @@ module Herbie
         end
         true
       end
+
       @playlist_controller.update_ui_playlist
     end
 
@@ -41,6 +44,14 @@ module Herbie
       t = Thread.new {@ui.loop},
       @player.loop
       t.join
+    end
+
+    class <<self
+      def save_config
+        File.open(File.join(ENV['HOME'], '.herbie'), 'w') do |f|
+          f << CONFIG.to_yaml
+        end
+      end
     end
   end
 end
