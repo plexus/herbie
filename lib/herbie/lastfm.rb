@@ -21,18 +21,30 @@ module Herbie
         token = config['token']
 
         lastfm.session = lastfm.auth.get_session(token)
-        
-        player.watch.playfile do |file|
-          tag_file = TagLib::MPEG::File.new(file)
-          tags = tag_file.id3v2_tag
 
-          if tags
-            # ui.set_status(:bottom, "scrobbling [%s - %s]" % [tags.title, tags.artist])       
-            @lastfm.track.update_now_playing(tags.artist, tags.title)
-            ui.set_status(:bottom, "scrobbled [%s - %s]" % [tags.artist, tags.title])
+        @file = nil
+
+        player.watch do |watch|
+          watch.playfile do |file|
+            @file = file
+            tag_file = TagLib::MPEG::File.new(file)
+            tags = tag_file.id3v2_tag
+            
+            if tags
+              @lastfm.track.update_now_playing(tags.artist, tags.title)
+            end
+          end
+
+          watch.end_of_stream do |msg|
+            tag_file = TagLib::MPEG::File.new(@file)
+            tags = tag_file.id3v2_tag
+            
+            if tags
+              @lastfm.track.scrobble(tags.artist, tags.title)
+              ui.set_status(:bottom, "scrobbled [%s - %s]" % [tags.artist, tags.title])
+            end            
           end
         end
-        
 
       rescue LoadError => e
         puts e
