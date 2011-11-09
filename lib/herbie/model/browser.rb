@@ -1,5 +1,6 @@
 require 'herbie/util/watchable'
 require 'herbie/util/filename'
+require 'herbie/util/escape'
 
 module Herbie
   class Browser
@@ -18,14 +19,13 @@ module Herbie
     end
 
     def ls
-      Dir[@current_dir + '/*'].map{|s| s.extend(Filename)}.sort
+      Dir[Escape.glob(@current_dir) + '/*'].map{|s| s.extend(Filename)}.sort
     end
 
     def cd_into(dir)
-      @current_dir = File.join(@current_dir,dir)
+      @current_dir = File.join(@current_dir, dir)
       notify_watchers :directory_changed, @current_dir
     end
-
 
     def size
       ls.size

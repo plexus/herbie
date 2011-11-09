@@ -1,3 +1,5 @@
+require 'herbie/util/escape'
+
 module Herbie
   # 
   class BrowserController
@@ -24,7 +26,7 @@ module Herbie
           if File.file? file
             @playlist.append_file(file)
           elsif File.directory? file
-            @playlist.append_files(Dir[File.join(file, '**')].sort)
+            @playlist.append_files(Dir[File.join(Escape.glob(file), '**')].sort)
           end
         end
         true
