@@ -7,7 +7,7 @@ module Herbie
   #
   class Player
     include Watchable
-    
+
     def initialize
       Gst.init
       @playbin = Gst::ElementFactory.make('playbin2')
@@ -20,6 +20,7 @@ module Herbie
     def playfile(file)
       @playbin.stop
       @playbin.uri = "file://#{file}"
+      notify_watchers :playfile, file
     end
 
     def play

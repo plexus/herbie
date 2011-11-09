@@ -1,0 +1,28 @@
+To configure AudioScrobbler support you need
+
+- the lastfm gem
+- the taglib-ruby gem
+- the taglib library (apt-get install libtag1-dev on Debian/Ubuntu)
+- an AudioScrobbler API key
+
+If any of these are not fulfilled scrobbling will be simply disabled.
+
+Request an API key at http://www.last.fm/api/account and configure the key and key secret in ~/.herbie :
+
+lastfm:
+  api_key: ...
+  api_secret: ...
+
+If all libraries can be loaded and the keys are configured then herbie will immediately exit with a message
+
+   Please visit http://www.last.fm/api/auth/?api_key=...&token=...
+   and configure your "token: ..." in ~/.herbie
+
+So add the token like to ~/.herbie
+
+lastfm:
+  api_key: ...
+  api_secret: ...
+  token: ...
+
+Relaunch Herbie and you're scrobbling!
