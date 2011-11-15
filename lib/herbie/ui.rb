@@ -1,4 +1,4 @@
-require 'ncurses'
+require 'ncurses.rb'
 require 'herbie/util/watchable'
 
 module Herbie
